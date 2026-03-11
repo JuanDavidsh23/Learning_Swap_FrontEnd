@@ -27,16 +27,31 @@ ws.onmessage = (event) => {
     document.getElementById("messages").appendChild(li)
 }
 
+let sendBtn = document.querySelector("button");
+let input = document.getElementById("message");
+
+// Deshabilitar input y botón mientras conecta
+input.disabled = true;
+sendBtn.disabled = true;
+
+ws.onopen = (event) => {
+    console.log("Conectado al servidor de WebSockets");
+    // Habilitar cuando ya conectó
+    input.disabled = false;
+    sendBtn.disabled = false;
+};
+
 function sendMessage(){
-
-    let input = document.getElementById("message")
-
-    ws.send(JSON.stringify({
-        user: user,
-        message: input.value
-    }))
-
-    input.value = ""
+    // Solo enviar si la conexión está abierta (readyState === 1)
+    if (ws.readyState === WebSocket.OPEN) {
+        ws.send(JSON.stringify({
+            user: user,
+            message: input.value
+        }))
+        input.value = ""
+    } else {
+        alert("El chat aún no se ha conectado o se ha perdido la conexión. Por favor, espera.");
+    }
 }
 
 </script>
